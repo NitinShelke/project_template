@@ -1,0 +1,5 @@
+flask
+ipykernel
+python-box
+
+-e .

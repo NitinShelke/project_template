@@ -1,0 +1,5 @@
+outs:
+- md5: 5c6d618d3d125d32f240e7c2ffc0d4cc
+  size: 9055
+  hash: md5
+  path: tips_dataset.csv
