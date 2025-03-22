@@ -1,0 +1,86 @@
+[project]
+name = "project"
+version = "0.1.0"
+description = "This is a sample Python project following industry standards."
+readme = "README.md"
+requires-python = ">=3.8"  # Changed from 3.13 for compatibility
+license = {text = "MIT"}
+authors = [
+    { name = "Nitin Shelke", email = "shelken54@gmail.com" }
+]
+keywords = ["python", "template", "best-practices"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "requests",   # HTTP requests handling
+    "pydantic",   # Data validation & parsing
+    "numpy",      # Numerical computing
+    "pandas"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",         # Unit testing
+    "pre-commit",     # Pre-commit hooks
+    "ruff",           # Linter, formatter, import sorter, type checker
+    "ipykernel"
+]
+
+docs = [
+    "mkdocs",         # Documentation generator
+    "mkdocs-material"
+]
+
+[project.scripts]
+project-template = "project_template:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+# Enable Ruff as a linter, formatter, import sorter, and type checker
+line-length = 88
+target-version = "py38"
+extend-select = ["I", "UP", "F", "E", "W", "C90", "PL", "TCH"]
+fix = true  # Automatically fix issues
+unsafe-fixes = true  # Allow unsafe fixes like auto-removing unused imports
+show-fixes = true  # Show suggested fixes
+
+# Enable Ruff formatter (replaces Black)
+[tool.ruff.format]
+quote-style = "double"  # Use double quotes for consistency
+line-ending = "lf"  # Unix-style line endings
+
+# Enable Ruff linter rules
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90", "I", "UP", "PL", "TCH"]
+ignore = ["E501"]  # Ignore line-too-long warnings (handled by formatter)
+
+# Enable Ruff type checking (replaces MyPy)
+[tool.ruff.lint.pydocstyle]
+convention = "google"  # Enforce Google-style docstrings
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.pre-commit]
+repos = [
+    { repo = "https://github.com/charliermarsh/ruff-pre-commit", rev = "v0.2.1", hooks = [{ id = "ruff" }, { id = "ruff-format" }] },
+    { repo = "https://github.com/pre-commit/pre-commit-hooks", rev = "v4.5.0", hooks = [
+        { id = "trailing-whitespace" },
+        { id = "end-of-file-fixer" },
+        { id = "check-yaml" },
+        { id = "check-merge-conflict" },
+        { id = "debug-statements" },
+    ]}
+]

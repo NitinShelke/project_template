@@ -1,0 +1,41 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual Environment
+.venv/
+env/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Logs and Temporary Files
+logs/
+*.log
+.DS_Store
+
+# Build & Dist
+dist/
+build/
+*.egg-info/
+
+# Pre-commit hooks cache
+.pre-commit-cache/
+
+# uv package manager cache
+.uv/
+
+# Jupyter Notebooks checkpoints (if any)
+.ipynb_checkpoints/
