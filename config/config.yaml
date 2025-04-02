@@ -1,0 +1,4 @@
+constants:
+  project_name: "sample"
+  version: "1.0.0"
+  debug_mode: true

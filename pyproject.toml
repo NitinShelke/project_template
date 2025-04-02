@@ -24,7 +24,8 @@ dependencies = [
     "requests",   # HTTP requests handling
     "pydantic",   # Data validation & parsing
     "numpy",      # Numerical computing
-    "pandas"
+    "pandas",
+    "python-box"
 ]
 
 [project.optional-dependencies]
