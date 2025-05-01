@@ -36,6 +36,7 @@ build/
 
 # uv package manager cache
 .uv/
+uv.lock
 
 # Jupyter Notebooks checkpoints (if any)
 .ipynb_checkpoints/
