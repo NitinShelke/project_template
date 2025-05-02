@@ -1,0 +1,45 @@
+name: Lint, Format and Test workflows
+
+on:
+  push:
+    branches: ["production", "develop"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint-format-test:
+    name: Lint Format and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -e ".[lint, formatter, dev]"
+
+      - name: 🧹 Ruff Linting Check
+        run: ruff check .
+
+      - name: 🧼 Ruff Formatting Check
+        run: ruff format . --check --diff
+
+      - name: 🧪 Test with PyTest
+        run: |
+          pytest -k "test and not deepeval" test/ \
+            --doctest-modules \
+            --junitxml=junit/test-results.xml \
+            --cov=com \
+            --cov-report=xml \
+            --cov-report=html
+
+      - name: 📦 Upload Pytest Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: junit/test-results.xml
