@@ -23,6 +23,7 @@ __pycache__/
 
 # Logs and Temporary Files
 logs/
+Loggings/
 *.log
 .DS_Store
 
@@ -40,3 +41,4 @@ uv.lock
 
 # Jupyter Notebooks checkpoints (if any)
 .ipynb_checkpoints/
+notebooks/
