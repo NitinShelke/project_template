@@ -30,7 +30,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest",         # Unit testing
+    "pytest",
+    "pytest-cov",        # Unit testing
     "pre-commit",     # Pre-commit hooks
     "ruff",           # Linter, formatter, import sorter, type checker
     "ipykernel"
@@ -48,40 +49,175 @@ project-template = "project_template:main"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.ruff]
-# Enable Ruff as a linter, formatter, import sorter, and type checker
-line-length = 88
-target-version = "py38"
-extend-select = ["I", "UP", "F", "E", "W", "C90", "PL", "TCH"]
-fix = true  # Automatically fix issues
-unsafe-fixes = true  # Allow unsafe fixes like auto-removing unused imports
-show-fixes = true  # Show suggested fixes
+notebooks = [
+  "jupyterlab",
+  "jupytext",
+  "matplotlib",
+  "seaborn",
+  "great_expectations",
+]
 
-# Enable Ruff formatter (replaces Black)
-[tool.ruff.format]
-quote-style = "double"  # Use double quotes for consistency
-line-ending = "lf"  # Unix-style line endings
 
-# Enable Ruff linter rules
-[tool.ruff.lint]
-select = ["E", "F", "W", "C90", "I", "UP", "PL", "TCH"]
-ignore = ["E501"]  # Ignore line-too-long warnings (handled by formatter)
+# -------------------------------------- Tools -----------------------------------------
 
-# Enable Ruff type checking (replaces MyPy)
-[tool.ruff.lint.pydocstyle]
-convention = "google"  # Enforce Google-style docstrings
+[tool.jupytext]
+notebook_metadata_filter = "all,-widgets,-varInspector,-jupytext.text_representation.jupytext_version,-kernelspec,-vscode"
+cell_metadata_filter = "-hide_output"
+# formats='notebooks///ipynb,notebooks///py:percent'
+
+
+# ------------------------------------- Testing ----------------------------------------
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-
-[tool.pre-commit]
-repos = [
-    { repo = "https://github.com/charliermarsh/ruff-pre-commit", rev = "v0.2.1", hooks = [{ id = "ruff" }, { id = "ruff-format" }] },
-    { repo = "https://github.com/pre-commit/pre-commit-hooks", rev = "v4.5.0", hooks = [
-        { id = "trailing-whitespace" },
-        { id = "end-of-file-fixer" },
-        { id = "check-yaml" },
-        { id = "check-merge-conflict" },
-        { id = "debug-statements" },
-    ]}
+addopts = [
+  "-ra",
+  "--cov",
+  "--cov-config=pyproject.toml",
+  "--import-mode=importlib",
+  "--color=yes",
 ]
+minversion = "7.0"
+norecursedirs = "__pycache__"
+testpaths = ["test/unit", "test/integration"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/__init__.py", "*/__main__.py", "*/test_*.py"]
+
+[tool.coverage.report]
+fail_under = 0
+show_missing = true
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if self.debug",
+
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError",
+
+  # Don't complain if non-runnable code isn't run:
+  "if 0:",
+  "if __name__ == .__main__.:",
+]
+
+# ---------------------------------------- Ruff ----------------------------------------
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+lint.select = [
+  "ANN", # flake8-annotations
+  "ARG", # flake8-unused-arguments
+  "B",   # flake8-bugbear
+  "C4",  # flake8-comprehensions
+  "C90", # mccabe
+  "D",   # pydocstyle
+  "DTZ", # flake8-datetimez
+  "E",   # pycodestyle
+  "ERA", # eradicate
+  "F",   # Pyflakes
+  "I",   # isort
+  "N",   # pep8-naming
+  "PD",  # pandas-vet
+  "PGH", # pygrep-hooks
+  "PLC", # Pylint
+  "PLE", # Pylint
+  "PLR", # Pylint
+  "PLW", # Pylint
+  "PT",  # flake8-pytest-style
+  "Q",   # flake8-quotes
+  "RET", # flake8-return
+  "S",   # flake8-bandit
+  "SIM", # flake8-simplify
+  "T20", # flake8-print
+  "TID", # flake8-tidy-imports
+  "W",   # pycodestyle
+]
+
+lint.ignore = [
+  # ================================ flake8-annotations ================================
+  "ANN002", # Missing type annotation for *args
+  "ANN003", # Missing type annotation for **kwargs
+  # ==================================== pydocstyle ====================================
+  "D107", # Missing docstring in __init__
+  "D200", # One-line docstring should fit on one line with quotes
+  "D212", # Multi-line docstring summary should start at the first line
+  # ================================== flake8-quotes ===================================
+  "Q000", # Remove bad quotes
+  # ================================== flake8-bandit ===================================
+  "S101", # Use of assert detected. The enclosed code will be removed when compiling
+  # to optimised byte code.
+  "DTZ001", # Datetime without tzinfo
+  "N803",   # Argument name should be lowercase
+  "N806",   # Variable in function should be lowercase
+
+]
+
+exclude = [
+  ".eggs",
+  ".git",
+  ".ipynb_checkpoints",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  "*.egg",
+  "*.pxd",
+  "*.pyx",
+  "__pycache__",
+  "__pypackages__",
+  "_build",
+  "build",
+  "dist",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = [
+  "F401", # Module imported but unused
+]
+"api.py" = [
+  "F401", # Module imported but unused
+]
+"notebooks/*" = [
+  "B018",   # Useless attribute access
+  "D100",   # Missing docstring in public module
+  "D101",   # Missing docstring in public class
+  "D102",   # Missing docstring in public method
+  "D103",   # Missing docstring in public function
+  "E402",   # Module level import not at top of file
+  "E501",   # Line too long
+  "E703",   # Unnecesary colon
+  "ERA001", # Found commented out code
+  "T201",   # print found
+  "T203",   # pprint found
+  "PLC0206",
+]
+"tests*/*" = [
+  "D100",    # Missing docstring in public module
+  "D101",    # Missing docstring in public class
+  "D102",    # Missing docstring in public method
+  "D103",    # Missing docstring in public function
+  "ANN001",  # Missing type annotation for function argument
+  "ANN201",  # Missing return type
+  "PT011",   # Raises is too broad
+  "PLR2004", # Magic value used in comparison
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["procu_copilot"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 6
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+ignore = ["build"]

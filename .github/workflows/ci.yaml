@@ -1,0 +1,71 @@
+name: Lint, Test, and Commit Message Check
+
+on:
+  push:
+    branches: ["main", "production", "develop"]
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+  workflow_dispatch:
+
+jobs:
+  check-commit-message:
+    name: 📝 Check Commit Message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get PR Commits
+        id: get-pr-commits
+        uses: tim-actions/get-pr-commits@master
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check Subject Line Length
+        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
+        with:
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
+          pattern: '^.{0,50}(\n.*)*$'
+          error: 'Subject too long (max 50 characters)'
+
+      - name: Check Body Line Length
+        if: ${{ success() || failure() }}
+        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
+        with:
+          commits: ${{ steps.get-pr-commits.outputs.commits }}
+          pattern: '^.+(\n.{0,72})*$'
+          error: 'Body line too long (max 72 characters)'
+
+  lint-format-test:
+    name: 🧪 Lint, Format, and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -e ".[lint, formatter, dev]"
+
+      - name: 🧹 Ruff Linting Check
+        run: ruff check .
+
+      - name: 🧼 Ruff Formatting Check
+        run: ruff format . --check --diff
+
+      - name: 🧪 Run Tests
+        run: |
+          pytest -k "test and not deepeval" tests/ \
+            --doctest-modules \
+            --junitxml=junit/test-results.xml \
+            --cov=com \
+            --cov-report=xml \
+            --cov-report=html
+
+      - name: 📦 Upload Pytest Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-results
+          path: junit/test-results.xml
