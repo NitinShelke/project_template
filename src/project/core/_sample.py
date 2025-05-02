@@ -1,6 +1,4 @@
-"""Unit test for the add function."""
-
-import pytest  # noqa: F401
+"""sample package to test pytest."""
 
 
 def add(a: int, b: int) -> int:
@@ -19,13 +17,3 @@ def add(a: int, b: int) -> int:
         The sum of the two integers.
     """
     return a + b
-
-
-# ---- Tests ----
-
-EXPECTED_SUM = 5
-
-
-def test_add() -> None:
-    """Test the add function with two integers."""
-    assert add(2, 3) == EXPECTED_SUM
